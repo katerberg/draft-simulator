@@ -1,23 +1,18 @@
-import logo from './logo.svg';
-import './App.css';
+import { useState } from 'react';
+import { CSVToArray } from './CsvParser';
+import Uploader from './Uploader';
 
 function App() {
+  const [csvText, setCsvText] = useState();
+  const handleCsvChange = (csv) => {
+    setCsvText(csv)
+    console.log(CSVToArray(csv))
+  }
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      {!csvText && <Uploader onCsvChange={handleCsvChange}/>}
+      {csvText}
     </div>
   );
 }
