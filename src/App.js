@@ -1,23 +1,22 @@
 import { useState } from 'react';
-import { CSVToArray } from './CsvParser';
+import { getPicks, CSVToArray } from './CsvParser';
+import DraftTable from './DraftTable';
 import Uploader from './Uploader';
 
-function App() {
+export default function App() {
   const [csv, setCsv] = useState();
   const handleCsvChange = (csv) => {
     setCsv(CSVToArray(csv))
   }
-  const players = csv ? csv[0]: null;
-  console.log(csv);
+  if(csv) {
+    console.log(csv);
+    console.log(getPicks(csv));
+  }
 
   return (
     <div>
-      {!csv&& <Uploader onCsvChange={handleCsvChange}/>}
-      {csv && <div>
-        {players.map(player => <div key={player}>{player}</div>)}
-      </div>}
+      {!csv && <Uploader onCsvChange={handleCsvChange}/>}
+      {csv && <DraftTable players={csv[0]} />}
     </div>
   );
 }
-
-export default App;
