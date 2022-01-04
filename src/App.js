@@ -3,16 +3,19 @@ import { CSVToArray } from './CsvParser';
 import Uploader from './Uploader';
 
 function App() {
-  const [csvText, setCsvText] = useState();
+  const [csv, setCsv] = useState();
   const handleCsvChange = (csv) => {
-    setCsvText(csv)
-    console.log(CSVToArray(csv))
+    setCsv(CSVToArray(csv))
   }
+  const players = csv ? csv[0]: null;
+  console.log(csv);
 
   return (
     <div>
-      {!csvText && <Uploader onCsvChange={handleCsvChange}/>}
-      {csvText}
+      {!csv&& <Uploader onCsvChange={handleCsvChange}/>}
+      {csv && <div>
+        {players.map(player => <div key={player}>{player}</div>)}
+      </div>}
     </div>
   );
 }
