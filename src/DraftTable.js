@@ -18,7 +18,7 @@ export default function DraftTable({players, picks}) {
     })));
     setTimeout(() => {
       makePick(pickNumber + 1)
-    }, 30000)
+    }, pickNumber > 13 ? 30000 : 3000)
   }, [picks]);
 
   useEffect(() => {
