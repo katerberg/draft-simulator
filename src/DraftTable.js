@@ -1,11 +1,13 @@
 import Table from '@mui/material/Table';
+import PropTypes from 'prop-types';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import { useCallback, useEffect, useState } from 'react';
 
-export default function DraftTable({players, picks}) {
+export default function DraftTable({players, picks, startingPick}) {
+  const [currentPickTimer, setCurrentPickTimer] = useState(null);
   const [visibleCards, setVisibleCards] = useState(picks.map(row => row.map(cell => '')));
 
   const makePick = useCallback((pickNumber) => {
@@ -16,14 +18,19 @@ export default function DraftTable({players, picks}) {
       }
       return '';
     })));
-    setTimeout(() => {
+    setCurrentPickTimer(setTimeout(() => {
+      console.log('setting timer for pick number', pickNumber + 1)
       makePick(pickNumber + 1)
-    }, pickNumber > 13 ? 30000 : 3000)
+    }, pickNumber > 18 ? 30000 : 3000));
   }, [picks]);
 
   useEffect(() => {
-    makePick(1);
-  },[makePick])
+    console.log(currentPickTimer);
+    if (!currentPickTimer) {
+    console.log('setting initial timer with starting pick of ', startingPick);
+      makePick(startingPick);
+    }
+  }, [makePick, startingPick, currentPickTimer])
 
   return (
       <Table stickyHeader sx={{maxHeight: '440px'}} aria-label="sticky table">
@@ -61,3 +68,9 @@ export default function DraftTable({players, picks}) {
       </Table>
   );
 }
+
+DraftTable.propTypes = {
+  startingPick: PropTypes.number.isRequired,
+  picks: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.string
+  )).isRequired,
+};
