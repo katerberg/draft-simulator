@@ -16,6 +16,7 @@ export default function DraftTable({players, picks, startingPick}) {
 
 
   const makePick = useCallback((pickNumber) => {
+    console.log('picking')
     setVisibleCards(picks.map((row, rowI) => row.map((cell, cellI) => {
       const cellNumber = rowI % 2 === 0 ? cellI + 1 : row.length - cellI;
       if (rowI * row.length + cellNumber <= pickNumber) {
@@ -27,7 +28,8 @@ export default function DraftTable({players, picks, startingPick}) {
   }, [picks]);
 
   const handlePlay = useCallback((pick) => {
-    const pickDelay = pick > 18 ? 3000 : 30000;
+    console.log('playing')
+    const pickDelay = pick > 8 ? 10000 : 1000;
     setIsPaused(false);
     setCurrentPickEnd(pickDelay + Date.now());
     setCurrentPickTimerId(setTimeout(() => {
@@ -38,17 +40,26 @@ export default function DraftTable({players, picks, startingPick}) {
 
   useEffect(() => {
     if (!currentPickTimerId && !isPaused) {
+      console.log('starting')
       makePick(startingPick);
       handlePlay(startingPick);
     }
   }, [makePick, handlePlay, isPaused, startingPick, currentPickTimerId, currentPickEnd])
 
   const handlePause = useCallback(() => {
+    console.log('pausing')
     setIsPaused(true);
     clearTimeout(currentPickTimerId);
     setCurrentPickTimerId(null);
     setCurrentPickEnd(null);
   }, [currentPickTimerId]);
+
+  const handleSkip = useCallback(()=>{
+    console.log('skipping')
+    handlePause();
+    makePick(currentPick + 1);
+    handlePlay(currentPick + 1);
+  }, [currentPick, handlePause, handlePlay, makePick]);
 
   return (
     <>
@@ -85,7 +96,7 @@ export default function DraftTable({players, picks, startingPick}) {
             ))}
         </TableBody>
       </Table>
-      <PickSelector pickNumber={currentPick} onPause={handlePause} isPaused={isPaused} onPlay={handlePlay}/>
+      <PickSelector pickNumber={currentPick} onPause={handlePause} isPaused={isPaused} onPlay={handlePlay} onSkip={handleSkip}/>
     </>
   );
 }
