@@ -5,10 +5,15 @@ import TableCell from '@mui/material/TableCell';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import { useCallback, useEffect, useState } from 'react';
+import PickSelector from './PickSelector';
 
 export default function DraftTable({players, picks, startingPick}) {
-  const [currentPickTimer, setCurrentPickTimer] = useState(null);
+  const [currentPickTimerId, setCurrentPickTimerId] = useState(null);
+  const [currentPickEnd, setCurrentPickEnd] = useState(null);
+  const [isPaused, setIsPaused] = useState(false);
+  const [currentPick, setCurrentPick] = useState(startingPick);
   const [visibleCards, setVisibleCards] = useState(picks.map(row => row.map(cell => '')));
+
 
   const makePick = useCallback((pickNumber) => {
     setVisibleCards(picks.map((row, rowI) => row.map((cell, cellI) => {
@@ -18,22 +23,36 @@ export default function DraftTable({players, picks, startingPick}) {
       }
       return '';
     })));
-    setCurrentPickTimer(setTimeout(() => {
-      console.log('setting timer for pick number', pickNumber + 1)
-      makePick(pickNumber + 1)
-    }, pickNumber > 18 ? 30000 : 3000));
+    setCurrentPick(pickNumber);
   }, [picks]);
 
+  const handlePlay = useCallback((pick) => {
+    const pickDelay = pick > 18 ? 3000 : 30000;
+    setIsPaused(false);
+    setCurrentPickEnd(pickDelay + Date.now());
+    setCurrentPickTimerId(setTimeout(() => {
+      makePick(pick + 1)
+      handlePlay(pick + 1);
+    }, pickDelay));
+  }, [makePick]);
+
   useEffect(() => {
-    console.log(currentPickTimer);
-    if (!currentPickTimer) {
-    console.log('setting initial timer with starting pick of ', startingPick);
+    if (!currentPickTimerId && !isPaused) {
       makePick(startingPick);
+      handlePlay(startingPick);
     }
-  }, [makePick, startingPick, currentPickTimer])
+  }, [makePick, handlePlay, isPaused, startingPick, currentPickTimerId, currentPickEnd])
+
+  const handlePause = useCallback(() => {
+    setIsPaused(true);
+    clearTimeout(currentPickTimerId);
+    setCurrentPickTimerId(null);
+    setCurrentPickEnd(null);
+  }, [currentPickTimerId]);
 
   return (
-      <Table stickyHeader sx={{maxHeight: '440px'}} aria-label="sticky table">
+    <>
+      <Table stickyHeader sx={{maxHeight: '440px', marginBottom: 30}} aria-label="sticky table">
         <TableHead>
           <TableRow>
             <TableCell
@@ -66,6 +85,8 @@ export default function DraftTable({players, picks, startingPick}) {
             ))}
         </TableBody>
       </Table>
+      <PickSelector pickNumber={currentPick} onPause={handlePause} isPaused={isPaused} onPlay={handlePlay}/>
+    </>
   );
 }
 

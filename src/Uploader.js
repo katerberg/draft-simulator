@@ -34,7 +34,6 @@ export default function Uploader({onCsvChange}) {
     const reader = new FileReader();
 
     reader.onload = function(e) {
-      console.log('loading with starting pick of ', startingPick)
       onCsvChange(e.target.result, startingPick)
     }
 
@@ -43,8 +42,8 @@ export default function Uploader({onCsvChange}) {
 
   const handleStartingPickChange = (e) => {
     let val = Number.parseInt(e.target.value || 1);
-    if (val > 46) {
-      val = 46;
+    if (val > 368) {
+      val = 368;
     }
     if (val < 1) {
       val = 1;
