@@ -6,6 +6,7 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import { useCallback, useEffect, useState } from 'react';
 import PickSelector from './PickSelector';
+import { Box } from '@mui/material';
 
 export default function DraftTable({players, picks, startingPick}) {
   const [currentPickTimerId, setCurrentPickTimerId] = useState(null);
@@ -13,8 +14,6 @@ export default function DraftTable({players, picks, startingPick}) {
   const [isPaused, setIsPaused] = useState(false);
   const [currentPick, setCurrentPick] = useState(startingPick);
   const [visibleCards, setVisibleCards] = useState(picks.map(row => row.map(cell => '')));
-
-
   const makePick = useCallback((pickNumber) => {
     console.log('picking')
     setVisibleCards(picks.map((row, rowI) => row.map((cell, cellI) => {
@@ -88,8 +87,13 @@ export default function DraftTable({players, picks, startingPick}) {
                     {i+1}
                 </TableCell>
                 {row.map((pick, j) => (
-                  <TableCell key={pick + j}>
-                      {pick}
+                  <TableCell key={pick + j} sx={{padding: 0, width: `calc(100% / ${players.length})`}}>
+                    <Box
+                      component="img"
+                      sx={{width: '100%'}}
+                      alt={pick ? `Card of ${pick}`: ''}
+                      src={`https://api.scryfall.com/cards/named?exact=${pick}&format=image&version=normal`}
+                    />
                   </TableCell>
                 ))}
               </TableRow>
