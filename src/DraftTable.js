@@ -28,7 +28,7 @@ export default function DraftTable({players, picks, startingPick}) {
 
   const handlePlay = useCallback((pick) => {
     console.log('playing')
-    const pickDelay = pick > 8 ? 10000 : 1000;
+    const pickDelay = pick > 8 ? 10000 : 8000;
     setIsPaused(false);
     setCurrentPickEnd(pickDelay + Date.now());
     setCurrentPickTimerId(setTimeout(() => {
